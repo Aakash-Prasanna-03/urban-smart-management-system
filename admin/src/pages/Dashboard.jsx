@@ -41,126 +41,77 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="px-4 py-6 sm:px-0">
-      <div className="border-4 border-dashed border-gray-200 rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard</h1>
-        
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 px-4 py-10 sm:px-0 zoom-110">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-blue-900 mb-10 tracking-tight">Admin Dashboard</h1>
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white overflow-hidden shadow-sm rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <FileText className="h-6 w-6 text-gray-400" />
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      Total Issues
-                    </dt>
-                    <dd className="text-lg font-medium text-gray-900">
-                      {stats.totalIssues}
-                    </dd>
-                  </dl>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div className="bg-white overflow-hidden shadow-lg rounded-2xl border border-blue-100 scale-105">
+            <div className="p-8">
+              <div className="flex items-center gap-4">
+                <FileText className="h-10 w-10 text-blue-400" />
+                <div>
+                  <div className="text-lg font-semibold text-blue-700">Total Issues</div>
+                  <div className="text-2xl font-bold text-blue-900">{stats.totalIssues}</div>
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="bg-white overflow-hidden shadow-sm rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <Clock className="h-6 w-6 text-yellow-400" />
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      Pending Issues
-                    </dt>
-                    <dd className="text-lg font-medium text-gray-900">
-                      {stats.pendingIssues}
-                    </dd>
-                  </dl>
+          <div className="bg-white overflow-hidden shadow-lg rounded-2xl border border-blue-100 scale-105">
+            <div className="p-8">
+              <div className="flex items-center gap-4">
+                <Clock className="h-10 w-10 text-yellow-400" />
+                <div>
+                  <div className="text-lg font-semibold text-blue-700">Pending Issues</div>
+                  <div className="text-2xl font-bold text-blue-900">{stats.pendingIssues}</div>
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="bg-white overflow-hidden shadow-sm rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <CheckCircle className="h-6 w-6 text-green-400" />
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      Resolved Issues
-                    </dt>
-                    <dd className="text-lg font-medium text-gray-900">
-                      {stats.resolvedIssues}
-                    </dd>
-                  </dl>
+          <div className="bg-white overflow-hidden shadow-lg rounded-2xl border border-blue-100 scale-105">
+            <div className="p-8">
+              <div className="flex items-center gap-4">
+                <CheckCircle className="h-10 w-10 text-green-400" />
+                <div>
+                  <div className="text-lg font-semibold text-blue-700">Resolved Issues</div>
+                  <div className="text-2xl font-bold text-blue-900">{stats.resolvedIssues}</div>
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="bg-white overflow-hidden shadow-sm rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <Users className="h-6 w-6 text-blue-400" />
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      Total Users
-                    </dt>
-                    <dd className="text-lg font-medium text-gray-900">
-                      {stats.totalUsers}
-                    </dd>
-                  </dl>
+          <div className="bg-white overflow-hidden shadow-lg rounded-2xl border border-blue-100 scale-105">
+            <div className="p-8">
+              <div className="flex items-center gap-4">
+                <Users className="h-10 w-10 text-blue-500" />
+                <div>
+                  <div className="text-lg font-semibold text-blue-700">Total Users</div>
+                  <div className="text-2xl font-bold text-blue-900">{stats.totalUsers}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
         {/* Recent Issues */}
-        <div className="bg-white shadow-sm rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-              Recent Issues
-            </h3>
+        <div className="bg-white shadow-lg rounded-2xl border border-blue-100">
+          <div className="px-8 py-8">
+            <h3 className="text-2xl font-bold text-blue-900 mb-6">Recent Issues</h3>
             {recentIssues.length > 0 ? (
-              <div className="overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-blue-100 text-lg">
+                  <thead className="bg-blue-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Title
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        User
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
+                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Title</th>
+                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Status</th>
+                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">User</th>
+                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Date</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-blue-50">
                     {recentIssues.map((issue) => (
-                      <tr key={issue._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {issue.title}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      <tr key={issue._id} className="transition hover:bg-blue-50">
+                        <td className="px-6 py-5 font-bold text-blue-900">{issue.title}</td>
+                        <td className="px-6 py-5">
+                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
                             issue.status === 'resolved' 
                               ? 'bg-green-100 text-green-800'
                               : issue.status === 'in-progress'
@@ -170,19 +121,15 @@ const Dashboard = () => {
                             {issue.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {issue.userEmail}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(issue.createdAt).toLocaleDateString()}
-                        </td>
+                        <td className="px-6 py-5 text-blue-900 font-medium">{issue.userEmail}</td>
+                        <td className="px-6 py-5 text-blue-900">{new Date(issue.createdAt).toLocaleDateString()}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              <p className="text-gray-500">No recent issues found.</p>
+              <p className="text-blue-400">No recent issues found.</p>
             )}
           </div>
         </div>
