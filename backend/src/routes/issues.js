@@ -37,6 +37,10 @@ router.post('/', uploadImage, handleUploadError, (req, res, next) => {
 // PUT /api/issues/:id/upvote - Update issue upvotes
 router.put('/:id/upvote', upvoteIssue);
 
+// PUT /api/issues/:id/status - Update issue status/progress (admin)
+import { updateIssueStatus } from '../controllers/issueController.js';
+router.put('/:id/status', updateIssueStatus);
+
 // DELETE /api/issues/:id - Delete issue
 router.delete('/:id', deleteIssue);
 

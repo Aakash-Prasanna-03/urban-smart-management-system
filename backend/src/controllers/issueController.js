@@ -1,3 +1,24 @@
+export const updateIssueStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, adminNotes } = req.body;
+    const validStatuses = ['pending', 'in-progress', 'resolved', 'rejected'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status value.' });
+    }
+    const issue = await Issue.findById(id);
+    if (!issue) {
+      return res.status(404).json({ success: false, message: 'Issue not found.' });
+    }
+    issue.status = status;
+    if (adminNotes !== undefined) issue.adminNotes = adminNotes;
+    await issue.save();
+    res.json({ success: true, message: 'Issue status updated.', data: issue });
+  } catch (error) {
+    console.error('Error updating issue status:', error);
+    res.status(500).json({ success: false, message: 'Server Error: Failed to update issue status', error: error.message });
+  }
+};
 import Issue from '../models/Issue.js';
 import fs from 'fs';
 import path from 'path';
