@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/database.js';
 import issuesRouter from './routes/issues.js';
 import adminRouter from './routes/admin.js';
+import chatRouter from './routes/chat.js';
 
 // Load environment variables
 dotenv.config();
@@ -43,6 +44,7 @@ app.get('/api/test', (req, res) => {
 // API routes
 app.use('/api/issues', issuesRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/chatbot', chatRouter);
 
 // Global error handler
 app.use((error, req, res, next) => {
