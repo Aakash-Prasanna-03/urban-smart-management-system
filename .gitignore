@@ -1,0 +1,55 @@
+# UrbanFix Monorepo Git Ignore
+
+# Node.js dependencies
+node_modules/
+
+# Build outputs
+*.log
+*.tsbuildinfo
+
+# Dependency lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env
+.env.*
+
+# Uploaded files
+backend/uploads/
+
+# Vite/Tailwind/PostCSS cache
+.vite/
+.vitepress/
+.next/
+.cache/
+
+# Editor/OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Test/coverage output
+coverage/
+
+# Ignore frontend and admin build artifacts (if any)
+frontend/dist/
+admin/dist/
+
+# Ignore Firebase/firestore rules
+frontend/src/firestore.rules
+
+# Ignore old admin cleanup script
+cleanup-old-admin.js
+
+# Ignore temp files
+*.tmp
+*.temp
+
+# Ignore public assets cache
+admin/public/*.cache
+frontend/public/*.cache
