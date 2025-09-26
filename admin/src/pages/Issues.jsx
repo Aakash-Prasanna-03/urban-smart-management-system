@@ -234,6 +234,25 @@ const Issues = () => {
                       {new Date(selectedIssue.createdAt).toLocaleString()}
                     </p>
                   </div>
+                  {/* Admin status change dropdown */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-blue-700 mb-1">Change Status</label>
+                    <select
+                      className="border border-blue-200 rounded-lg px-3 py-2 text-blue-900 bg-blue-50 focus:outline-none mr-2"
+                      value={selectedIssue.status}
+                      onChange={e => setSelectedIssue({ ...selectedIssue, status: e.target.value })}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="in-progress">In Progress</option>
+                      <option value="resolved">Resolved</option>
+                    </select>
+                    <button
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 font-semibold"
+                      onClick={() => updateIssueStatus(selectedIssue._id, selectedIssue.status)}
+                    >
+                      Update Status
+                    </button>
+                  </div>
                 </div>
 
                 <div>

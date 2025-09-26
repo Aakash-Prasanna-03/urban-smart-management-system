@@ -133,28 +133,36 @@ export const updateIssueStatus = async (req, res) => {
       });
     }
 
-    const updateData = {};
-    if (status) updateData.status = status;
-    if (adminNotes !== undefined) updateData.adminNotes = adminNotes;
-    if (priority) updateData.priority = priority;
-
-    const issue = await Issue.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
-
-    if (!issue) {
+    // Find the target issue to get its location and category
+    const targetIssue = await Issue.findById(id);
+    if (!targetIssue) {
       return res.status(404).json({
         success: false,
         message: 'Issue not found'
       });
     }
 
+    // Update all issues with same location (lat/lng) and category
+    const location = targetIssue.location;
+    const category = targetIssue.category;
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (adminNotes !== undefined) updateData.adminNotes = adminNotes;
+    if (priority) updateData.priority = priority;
+
+    // Use a small tolerance for lat/lng to group nearby issues
+    const TOLERANCE = 0.0001;
+    const updated = await Issue.updateMany({
+      category,
+      'location.lat': { $gte: location.lat - TOLERANCE, $lte: location.lat + TOLERANCE },
+      'location.lng': { $gte: location.lng - TOLERANCE, $lte: location.lng + TOLERANCE }
+    }, updateData);
+
     res.json({
       success: true,
-      message: 'Issue updated successfully',
-      data: issue
+      message: 'Group status updated successfully',
+      count: updated.modifiedCount,
+      data: updateData
     });
   } catch (error) {
     console.error('Error updating issue:', error);

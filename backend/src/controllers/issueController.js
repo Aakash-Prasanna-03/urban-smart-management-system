@@ -23,7 +23,7 @@ import Issue from '../models/Issue.js';
 import haversine from 'haversine-distance';
 import fs from 'fs';
 import path from 'path';
-import { getGeminiResponse } from './chatbotController.js';
+// import { getGeminiResponse } from './chatbotController.js';
 
 // Get all issues
 export const getAllIssues = async (req, res) => {
@@ -69,23 +69,10 @@ export const getAllIssues = async (req, res) => {
       const peopleCount = reporterIds.length;
       const titles = group.map(issue => issue.title).join(' / ');
       const descriptions = group.map(issue => issue.description).join(' | ');
-      // Get Gemini summary for all descriptions
-      let geminiSummary = '';
-      try {
-        const summary = await getGeminiResponse(`Summarize these urban issue descriptions for admin review: ${descriptions}`);
-        if (!summary || summary.toLowerCase().includes('sorry') || summary.toLowerCase().includes('something went wrong')) {
-          geminiSummary = '';
-        } else {
-          geminiSummary = summary;
-        }
-      } catch (err) {
-        geminiSummary = '';
-      }
       return {
         _id: group[0]._id,
         title: titles,
         description: descriptions,
-        geminiSummary,
         category,
         status: groupStatus,
         location: group[0].location,

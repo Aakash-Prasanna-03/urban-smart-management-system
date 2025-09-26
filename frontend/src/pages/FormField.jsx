@@ -290,26 +290,24 @@ export default function Profile() {
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-blue-700 mb-1">Full Name</label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={e => handleInputChange('name', e.target.value)}
-                        className="w-full px-4 py-2 border border-blue-200 rounded-lg text-lg"
-                      />
-                      {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-blue-700 mb-1">Email Address</label>
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={e => handleInputChange('email', e.target.value)}
-                        className="w-full px-4 py-2 border border-blue-200 rounded-lg text-lg"
-                      />
-                      {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-                    </div>
+                    <FormField
+                      label="Full Name"
+                      icon={<User className="w-4 h-4" />}
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      error={errors.name}
+                      className="text-lg"
+                    />
+
+                    <FormField
+                      label="Email Address"
+                      type="email"
+                      icon={<Mail className="w-4 h-4" />}
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      error={errors.email}
+                      className="text-lg"
+                    />
                   </div>
                 </div>
               )}
@@ -324,40 +322,38 @@ export default function Profile() {
                   </div>
 
                   <div className="space-y-6">
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-blue-700 mb-1">Current Password</label>
-                      <input
-                        type="password"
-                        placeholder="Enter your current password"
-                        value={formData.currentPassword}
-                        onChange={e => handleInputChange('currentPassword', e.target.value)}
-                        className="w-full px-4 py-2 border border-blue-200 rounded-lg"
-                      />
-                      {errors.currentPassword && <p className="text-red-500 text-xs mt-1">{errors.currentPassword}</p>}
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-blue-700 mb-1">New Password</label>
-                      <input
-                        type="password"
-                        placeholder="Enter new password"
-                        value={formData.newPassword}
-                        onChange={e => handleInputChange('newPassword', e.target.value)}
-                        className="w-full px-4 py-2 border border-blue-200 rounded-lg"
-                      />
-                      {errors.newPassword && <p className="text-red-500 text-xs mt-1">{errors.newPassword}</p>}
-                    </div>
+                    <FormField
+                      label="Current Password"
+                      type="password"
+                      icon={<Lock className="w-4 h-4" />}
+                      placeholder="Enter your current password"
+                      description="Required to change your password"
+                      value={formData.currentPassword}
+                      onChange={(e) => handleInputChange('currentPassword', e.target.value)}
+                      error={errors.currentPassword}
+                    />
+
+                    <FormField
+                      label="New Password"
+                      type="password"
+                      icon={<Lock className="w-4 h-4" />}
+                      placeholder="Enter new password"
+                      description="Must be at least 6 characters long"
+                      value={formData.newPassword}
+                      onChange={(e) => handleInputChange('newPassword', e.target.value)}
+                      error={errors.newPassword}
+                    />
+
                     {formData.newPassword && (
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-blue-700 mb-1">Confirm New Password</label>
-                        <input
-                          type="password"
-                          placeholder="Confirm new password"
-                          value={formData.confirmPassword}
-                          onChange={e => handleInputChange('confirmPassword', e.target.value)}
-                          className="w-full px-4 py-2 border border-blue-200 rounded-lg"
-                        />
-                        {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
-                      </div>
+                      <FormField
+                        label="Confirm New Password"
+                        type="password"
+                        icon={<Lock className="w-4 h-4" />}
+                        placeholder="Confirm new password"
+                        value={formData.confirmPassword}
+                        onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                        error={errors.confirmPassword}
+                      />
                     )}
                   </div>
                 </div>
