@@ -1,16 +1,37 @@
 
-# UrbanFix - Urban Issue Reporting System
 
-UrbanFix is a full-stack web application for reporting and managing urban infrastructure issues. It features a React frontend, a Node.js/Express backend, and a MongoDB database. The system is designed for both citizens and administrators, with advanced grouping, risk analysis, and strict classification of issues.
+# 🚀 UrbanFix - Smart Urban Issue Reporting & Management
 
-## Project Overview
+> **UrbanFix** is a modern full-stack platform for citizens and administrators to report, track, and resolve urban infrastructure issues. Built for hackathons, city challenges, and real-world deployment.
 
-UrbanFix enables:
-- Citizens to report urban issues (potholes, streetlights, sanitation, etc.) with images and location
-- Admins to view, group, and manage issues with unified status, upvotes, and risk classification
-- Real-time updates, image uploads, GPS tracking, and advanced filtering
+---
 
-## Architecture
+## 🌟 Features
+
+### 👥 For Citizens
+- Report issues (potholes, streetlights, sanitation, etc.) with images, location, and description
+- Upvote issues to signal urgency (grouped by location)
+- View and manage your reports
+- Real-time updates, notifications, and dark mode
+
+### 🛠️ For Administrators
+- Secure admin portal with login
+- Dashboard: grouped issues, unified status, upvotes, and risk classification
+- Change issue status, add notes, filter by risk and status
+- AI-powered risk analysis (Gemini API)
+- View images, user details, and GPS
+
+### 💡 Technical Highlights
+- React (Vite) frontend, Node.js/Express backend, MongoDB database
+- Firebase authentication
+- Multer for image uploads
+- Tailwind CSS for beautiful UI
+- Leaflet for interactive maps
+- Gemini API for risk and summary analysis
+
+---
+
+## 🏗️ Architecture & Project Structure
 
 ```
 UrbanFix/
@@ -24,29 +45,124 @@ UrbanFix/
 └── README.md
 ```
 
-## Key Features
+---
 
-### For Citizens
-- Report issues with description, image, and location
-- Upvote issues (shows people count per location group)
-- View personal reports
-- Dark mode toggle
+## ⚡ Quick Start
 
-### For Administrators
-- Dashboard with grouped issues by location and category
-- Unified status and upvotes for each location group
-- Strict risk classification (low, moderate, urgent) using Gemini API
-- Filter issues by status and risk level
-- View images and details in modal
-- Responsive admin UI
+### Prerequisites
+- Node.js v16+
+- MongoDB (local or Atlas)
+- Git
 
-### Technical Highlights
-- Firebase authentication
-- MongoDB database
-- RESTful API
-- Multer for image upload
-- Tailwind CSS for styling
-- Gemini API for risk and summary analysis
+### Setup
+1. Clone the repo and run `setup.bat` (Windows)
+2. Edit `backend/.env` with your MongoDB URI and Gemini API key
+3. Start backend (`start-backend.bat`), frontend (`start-frontend.bat`), and admin (`cd admin && npm run dev`)
+
+### Access
+- User frontend: http://localhost:5173
+- Admin portal: http://localhost:3001 (login: admin/admin123)
+- Backend API: http://localhost:5000
+
+---
+
+## 🖥️ Admin Portal
+
+The admin portal provides:
+- Secure login
+- Dashboard with grouped issues, unified status, upvotes, and risk level
+- Issue management: change status, view details, filter by risk/status
+- AI-powered risk classification (Gemini API)
+
+---
+
+## 📡 API Endpoints
+
+**Issues:**
+- `GET /api/issues` - Get all issues (grouped)
+- `GET /api/issues/user/:userId` - Get user's issues
+- `POST /api/issues` - Create new issue
+- `PUT /api/issues/:id/upvote` - Toggle upvote
+- `DELETE /api/issues/:id` - Delete issue
+
+**Admin:**
+- `POST /api/admin/login` - Admin login
+- `GET /api/admin/stats` - Dashboard stats
+- `GET /api/admin/issues` - Get all issues
+- `PUT /api/admin/issues/:id` - Update status
+
+**Images:**
+- Served from `/uploads/{filename}`
+
+---
+
+## 🗄️ Database Schema
+
+**Issue:**
+```js
+{
+   _id, title, description, image, location: {lat, lng}, userId, userEmail,
+   status, upvotes, priority, category, adminNotes, createdAt, updatedAt
+}
+
+
+---
+
+## 🧪 Testing & Troubleshooting
+
+### Manual Testing
+- Test backend API with curl or Postman
+- Test frontend and admin UI in browser
+
+### Key Features to Test
+- Issue submission, image upload, location
+- Grouping and unified status in admin dashboard
+- Risk classification and filtering
+- Responsive design and dark mode
+
+### Troubleshooting
+- Check MongoDB connection and credentials
+- Ensure correct ports in .env and vite.config.js
+- Image upload: check file size and uploads/ folder
+- CORS: verify URLs in .env
+
+---
+
+## 🔧 Configuration
+
+**Backend .env:**
+```
+MONGODB_URI=your_mongodb_uri
+PORT=5000
+GEMINI_API_KEY=your_gemini_api_key
+FRONTEND_URL=http://localhost:5173
+ADMIN_URL=http://localhost:3001
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+JWT_SECRET=your-secret-key
+MAX_FILE_SIZE=5242880
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork and branch
+2. Commit and push changes
+3. Open a pull request
+
+---
+
+## 📄 License & Credits
+
+This project is part of a hackathon submission for urban infrastructure management.
+
+**Acknowledgments:**
+- MongoDB, React, Express.js, Leaflet, Tailwind CSS
+
+---
+
+**Happy coding! 🎉**
 
 ## Tech Stack
 

@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   MessageCircle, Send, X, MapPin, Camera, FileText,
-  Minimize2, Maximize2, Moon, Sun, Shield, Menu,
+  Moon, Sun, Shield, Menu,
   Upload, Users, User, LogOut
 } from "lucide-react";
 
@@ -215,16 +215,7 @@ export default function Navbar() {
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-3">
-              {user && (
-                <button
-                  onClick={() => setChatOpen(true)}
-                  className="relative bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 text-sm rounded-lg transition-colors group hidden sm:flex items-center"
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Chat
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-400 rounded-full animate-pulse" />
-                </button>
-              )}
+              {/* Chat button removed (not implemented) */}
 
               {/* Dark Mode Toggle */}
               <button
@@ -295,18 +286,7 @@ export default function Navbar() {
                   </Link>
                 ))}
 
-                {user && (
-                  <button
-                    onClick={() => {
-                      setChatOpen(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 w-full"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    Chat Assistant
-                  </button>
-                )}
+                {/* Chat Assistant button removed (not implemented) */}
 
                 {!user && (
                   <div className="pt-4 space-y-2">
