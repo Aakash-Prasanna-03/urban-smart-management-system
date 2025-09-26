@@ -2,16 +2,6 @@ export default function IssueCard({ issue, user, onUpvote, disabledUpvote }) {
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
       <h2 className="font-semibold text-lg text-gray-800 dark:text-gray-100">{issue.title}</h2>
-      {issue.image && (
-        <img 
-          src={`http://localhost:5001/uploads/${issue.image}`}
-          alt="Issue"
-          className="w-full h-48 object-cover rounded-lg mt-2"
-          onError={(e) => {
-            e.target.style.display = 'none';
-          }}
-        />
-      )}
       <p className="text-gray-600 dark:text-gray-300 mt-2">{issue.description}</p>
       <div className="mt-4 flex items-center justify-between">
         <button
