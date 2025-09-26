@@ -7,6 +7,7 @@ export default function Upload({ refreshReports }) {
   const { user, loading: authLoading } = useAuth(); 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [loadingLocation, setLoadingLocation] = useState(false);
@@ -82,10 +83,11 @@ export default function Upload({ refreshReports }) {
     try {
       // Create FormData to handle file uploads
       const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("userId", user.id || user._id || Date.now().toString());
-      formData.append("userEmail", user.email);
+    formData.append("title", category || "other");
+    formData.append("description", description);
+    formData.append("category", category || "other");
+  formData.append("userId", user.id || user._id || Date.now().toString());
+  formData.append("userEmail", user.email);
       
       // Add location
       formData.append("location[lat]", lat || "0");
@@ -128,15 +130,15 @@ export default function Upload({ refreshReports }) {
             </label>
             <select
               className="w-full px-4 py-2 rounded-lg border dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
               required
             >
               <option value="" disabled>
                 Select a problem
               </option>
               {problemOptions.map((problem, idx) => (
-                <option key={idx} value={problem}>
+                <option key={idx} value={problem.toLowerCase().replace(/ /g, "-")}> {/* Use slug for category */}
                   {problem}
                 </option>
               ))}

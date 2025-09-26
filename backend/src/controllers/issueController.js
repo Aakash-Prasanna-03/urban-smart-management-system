@@ -20,20 +20,73 @@ export const updateIssueStatus = async (req, res) => {
   }
 };
 import Issue from '../models/Issue.js';
+import haversine from 'haversine-distance';
 import fs from 'fs';
 import path from 'path';
 
 // Get all issues
 export const getAllIssues = async (req, res) => {
   try {
-    const issues = await Issue.find()
-      .sort({ createdAt: -1 })
-      .select('-__v');
+    const issues = await Issue.find().sort({ createdAt: -1 }).select('-__v');
+
+    // Group issues by location (within ~100 meters) AND category
+    const RADIUS_METERS = 100;
+    const grouped = [];
+    const visited = new Set();
+
+    for (let i = 0; i < issues.length; i++) {
+      if (visited.has(issues[i]._id.toString())) continue;
+      const group = [issues[i]];
+      visited.add(issues[i]._id.toString());
+      for (let j = i + 1; j < issues.length; j++) {
+        if (visited.has(issues[j]._id.toString())) continue;
+        const dist = haversine(
+          { lat: issues[i].location.lat, lng: issues[i].location.lng },
+          { lat: issues[j].location.lat, lng: issues[j].location.lng }
+        );
+        // Only group if location is close AND category matches
+        if (dist <= RADIUS_METERS && issues[i].category === issues[j].category) {
+          group.push(issues[j]);
+          visited.add(issues[j]._id.toString());
+        }
+      }
+      grouped.push(group);
+    }
+
+    // Format as a single issue per group, merging upvotes and info
+    const formatted = grouped.map(group => {
+      // All issues in this group have the same category
+      const category = group[0].category;
+      // Only merge titles/descriptions from this category
+      // Merge upvotes from all issues in the group, deduplicate
+      let allUpvotes = [...new Set(group.flatMap(issue => issue.upvotes))];
+      // Also count each unique user who reported an issue in this group as an upvote
+      const reporterIds = [...new Set(group.map(issue => issue.userId))];
+      // Merge both sets
+      allUpvotes = [...new Set([...allUpvotes, ...reporterIds])];
+      const upvoteCount = allUpvotes.length;
+      const titles = group.map(issue => issue.title).join(' / ');
+      const descriptions = group.map(issue => issue.description).join(' | ');
+      return {
+        _id: group[0]._id,
+        title: titles,
+        description: descriptions,
+        category,
+        location: group[0].location,
+        image: group[0].image,
+        upvotes: allUpvotes,
+        upvoteCount,
+        createdAt: group[0].createdAt
+      };
+    });
+
+    // Sort by upvoteCount descending
+    formatted.sort((a, b) => b.upvoteCount - a.upvoteCount);
 
     res.json({
       success: true,
-      count: issues.length,
-      data: issues
+      count: formatted.length,
+      data: formatted
     });
   } catch (error) {
     console.error('Error fetching issues:', error);

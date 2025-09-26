@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { fetchRecentIssues } from "../api/issues";
+import { fetchRecentIssues, upvoteIssue } from "../api/issues";
 import "leaflet/dist/leaflet.css";
 
 // You may need to install leaflet: npm install react-leaflet leaflet
 
 export default function Community() {
   const { user, loading: authLoading } = useAuth();
-  const [issues, setIssues] = useState([]);
+  const [groupedIssues, setGroupedIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]); // default: India
 
@@ -26,13 +26,13 @@ export default function Community() {
     const loadIssues = async () => {
       try {
         setLoading(true);
-        const fetchedIssues = await fetchRecentIssues();
-        setIssues(fetchedIssues);
-        
-        // If there are issues with locations, center map on first one
-        const firstIssueWithLocation = fetchedIssues.find(issue => issue.location?.lat && issue.location?.lng);
-        if (firstIssueWithLocation) {
-          setMapCenter([firstIssueWithLocation.location.lat, firstIssueWithLocation.location.lng]);
+        const response = await fetchRecentIssues();
+        const fetchedGroups = response.data || [];
+        setGroupedIssues(fetchedGroups);
+
+        // Center map on first group location
+        if (fetchedGroups.length > 0 && fetchedGroups[0].location?.lat && fetchedGroups[0].location?.lng) {
+          setMapCenter([fetchedGroups[0].location.lat, fetchedGroups[0].location.lng]);
         }
       } catch (error) {
         console.error("Failed to load issues:", error);
@@ -84,14 +84,15 @@ export default function Community() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution="&copy; OpenStreetMap contributors"
             />
-            {issues
+            {groupedIssues
               .filter(issue => issue.location?.lat && issue.location?.lng)
-              .map((issue) => (
-                <Marker key={issue._id} position={[issue.location.lat, issue.location.lng]}>
+              .map((issue, idx) => (
+                <Marker key={idx} position={[issue.location.lat, issue.location.lng]}>
                   <Popup>
                     <strong>{issue.title}</strong>
                     <br />
                     {issue.description}
+                    <div>Upvotes: {issue.upvoteCount}</div>
                   </Popup>
                 </Marker>
               ))}
@@ -99,35 +100,47 @@ export default function Community() {
         )}
       </div>
 
-      {/* Issue list */}
+      {/* Issue list (grouped as single issue) */}
       <div className="space-y-4">
         {loading ? (
           <p className="text-gray-600 dark:text-gray-300">Loading issues...</p>
-        ) : issues.length > 0 ? (
-          issues.map((issue) => (
-            <div
-              key={issue._id}
-              className="bg-white dark:bg-gray-800 shadow rounded-lg p-4"
-            >
+        ) : groupedIssues.length > 0 ? (
+          groupedIssues.map((issue, idx) => (
+            <div key={idx} className="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
               <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-                {issue.title}
+                Location: {issue.location.lat.toFixed(4)}, {issue.location.lng.toFixed(4)}
               </h2>
+              <div className="mb-2">Upvotes: {issue.upvoteCount}</div>
+              {/* Show main issue title/description only */}
+              {(() => {
+                const titles = issue.title.split(' / ');
+                const descriptions = issue.description.split(' | ');
+                return <><strong>{titles[0]}</strong><div className="text-gray-600 dark:text-gray-300 mb-2">{descriptions[0]}</div></>;
+              })()}
               {issue.image && (
                 <img 
                   src={`http://localhost:5001/${issue.image}`}
                   alt="Issue"
-                  className="w-full h-48 object-cover rounded-lg mt-2 mb-2"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
+                  className="w-full h-32 object-cover rounded-lg mt-2 mb-2"
+                  onError={(e) => { e.target.style.display = 'none'; }}
                 />
               )}
-              <p className="text-gray-600 dark:text-gray-300">
-                {issue.description}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                Reported on: {new Date(issue.createdAt).toLocaleDateString()}
-              </p>
+              <div className="flex items-center gap-2">
+                {/* Upvote button for grouped issue */}
+                {user && !issue.upvotes?.includes(user.uid) && (
+                  <button
+                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    onClick={async () => {
+                      await upvoteIssue(issue._id, user.uid);
+                      // Refresh issues after upvote
+                      const response = await fetchRecentIssues();
+                      setGroupedIssues(response.data || []);
+                    }}
+                  >
+                    Upvote
+                  </button>
+                )}
+              </div>
             </div>
           ))
         ) : (
