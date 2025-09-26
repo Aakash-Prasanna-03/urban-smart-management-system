@@ -57,48 +57,43 @@ export default function Register() {
     return null;
   };
 
-  const handleSubmit = async () => {
-  if (!validateStep(currentStep)) return;
+  const [successMsg, setSuccessMsg] = useState("");
 
-  setLoading(true);
-  try {
-    const submitData = new FormData();
-    
-    // Append form fields
-    submitData.append('title', formData.title);
-    submitData.append('description', formData.description);
-    submitData.append('category', formData.category);
-    submitData.append('priority', formData.priority);
-    submitData.append('location', JSON.stringify(formData.location));
-    submitData.append('tags', JSON.stringify(formData.tags));
-    submitData.append('contactInfo', JSON.stringify(formData.contactInfo));
-    submitData.append('userId', user?.id || 'anonymous');
-
-    // Append images
-    formData.images.forEach((image) => {
-      submitData.append('images', image);
-    });
-
-    const response = await fetch('http://localhost:5000/api/issues', {
-      method: 'POST',
-      body: submitData,
-    });
-
-    const result = await response.json();
-    
-    if (result.success) {
-      alert('Issue reported successfully!');
-      navigate('/myreports');
-    } else {
-      throw new Error(result.error || 'Failed to submit issue');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccessMsg("");
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
     }
-  } catch (error) {
-    console.error('Submit error:', error);
-    alert(`Failed to submit issue: ${error.message}`);
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    try {
+  const response = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password
+        })
+      });
+      const result = await response.json();
+      if (response.ok) {
+        setSuccessMsg("Signup successful! You can now log in.");
+        setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+        setAcceptTerms(false);
+        setTimeout(() => navigate("/login"), 2000);
+      } else {
+        setError(result.message || "Signup failed");
+      }
+    } catch (err) {
+      setError("Server error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50 to-pink-100 dark:from-gray-950 dark:via-purple-950 dark:to-pink-950 flex items-center justify-center p-4">
       {/* Background Elements */}
@@ -124,6 +119,14 @@ export default function Register() {
           </div>
 
           {/* Error Alert */}
+          {/* Success Alert */}
+          {successMsg && (
+            <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg animate-slide-up">
+              <p className="text-sm text-green-700 dark:text-green-400 text-center">
+                {successMsg}
+              </p>
+            </div>
+          )}
           {error && (
             <div className="mb-6 p-4 bg-danger-50 dark:bg-danger-900/30 border border-danger-200 dark:border-danger-800 rounded-lg animate-slide-up">
               <p className="text-sm text-danger-700 dark:text-danger-400 text-center">

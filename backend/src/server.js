@@ -42,6 +42,8 @@ app.get('/api/test', (req, res) => {
 });
 
 // API routes
+import authRouter from './routes/auth.js';
+app.use('/api/auth', authRouter);
 app.use('/api/issues', issuesRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/chatbot', chatRouter);

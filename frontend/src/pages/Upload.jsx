@@ -17,11 +17,10 @@ export default function UploadPage() {
 
   // Form data
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    priority: 'medium',
-    location: {
+  title: '',
+  description: '',
+  category: '',
+  location: {
       address: '',
       coordinates: null,
       landmark: ''
@@ -52,12 +51,7 @@ export default function UploadPage() {
     { id: 'other', label: 'Other', icon: '📝', description: 'Other civic issues' }
   ];
 
-  const priorityLevels = [
-    { value: 'low', label: 'Low Priority', color: 'green', description: 'Minor inconvenience' },
-    { value: 'medium', label: 'Medium Priority', color: 'yellow', description: 'Moderate impact' },
-    { value: 'high', label: 'High Priority', color: 'orange', description: 'Significant impact' },
-    { value: 'urgent', label: 'Urgent', color: 'red', description: 'Safety risk or emergency' }
-  ];
+
 
   // Get current location
   const getCurrentLocation = () => {
@@ -204,21 +198,31 @@ export default function UploadPage() {
     setLoading(true);
     try {
       const submitData = new FormData();
-      
-      // Append form fields
+
+      // Append required fields for backend
       submitData.append('title', formData.title);
       submitData.append('description', formData.description);
       submitData.append('category', formData.category);
-      submitData.append('priority', formData.priority);
-      submitData.append('location', JSON.stringify(formData.location));
+      submitData.append('userId', user?.id || user?._id || user?.uid);
+      submitData.append('userEmail', user?.email);
+
+      // Flatten location for backend
+      if (formData.location?.coordinates) {
+        submitData.append('location[lat]', formData.location.coordinates.lat);
+        submitData.append('location[lng]', formData.location.coordinates.lng);
+      } else if (formData.location?.lat && formData.location?.lng) {
+        submitData.append('location[lat]', formData.location.lat);
+        submitData.append('location[lng]', formData.location.lng);
+      }
+
+      // Optionally append one image (backend expects 'image')
+      if (formData.images.length > 0) {
+        submitData.append('image', formData.images[0]);
+      }
+
+      // Optionally append tags and contactInfo if needed by backend
       submitData.append('tags', JSON.stringify(formData.tags));
       submitData.append('contactInfo', JSON.stringify(formData.contactInfo));
-      submitData.append('userId', user?.id);
-
-      // Append images
-      formData.images.forEach((image, index) => {
-        submitData.append(`images`, image);
-      });
 
       const response = await fetch('/api/issues', {
         method: 'POST',
@@ -342,30 +346,7 @@ export default function UploadPage() {
                 {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
               </div>
 
-              {/* Priority */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  Priority Level
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {priorityLevels.map((priority) => (
-                    <button
-                      key={priority.value}
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, priority: priority.value }))}
-                      className={`p-3 border-2 rounded-lg text-center transition-all ${
-                        formData.priority === priority.value
-                          ? `border-${priority.color}-500 bg-${priority.color}-50 dark:bg-${priority.color}-900/30`
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className={`w-4 h-4 rounded-full mx-auto mb-2 bg-${priority.color}-500`} />
-                      <div className="font-medium text-sm text-gray-900 dark:text-white">{priority.label}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">{priority.description}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+
 
               {/* Description */}
               <div>
@@ -630,9 +611,20 @@ export default function UploadPage() {
                 <div className="space-y-2 text-sm">
                   <div><span className="font-medium">Title:</span> {formData.title}</div>
                   <div><span className="font-medium">Category:</span> {categories.find(c => c.id === formData.category)?.label}</div>
-                  <div><span className="font-medium">Priority:</span> {priorityLevels.find(p => p.value === formData.priority)?.label}</div>
                   <div><span className="font-medium">Location:</span> {formData.location.address}</div>
                   <div><span className="font-medium">Images:</span> {formData.images.length} uploaded</div>
+                  {previewImages.length > 0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 mt-2">
+                      {previewImages.map((preview, idx) => (
+                        <img
+                          key={preview.id}
+                          src={preview.url}
+                          alt={`Preview ${idx + 1}`}
+                          className="w-full h-16 object-cover rounded border border-gray-200 dark:border-gray-600"
+                        />
+                      ))}
+                    </div>
+                  )}
                   {formData.tags.length > 0 && (
                     <div><span className="font-medium">Tags:</span> {formData.tags.join(', ')}</div>
                   )}
@@ -687,7 +679,7 @@ export default function UploadPage() {
                 <li>• Be specific and descriptive in your title and description</li>
                 <li>• Include clear photos showing the issue from multiple angles</li>
                 <li>• Provide exact location details with landmarks when possible</li>
-                <li>• Choose the appropriate priority level based on safety impact</li>
+
                 <li>• Add relevant tags to help categorize your issue</li>
               </ul>
             </div>

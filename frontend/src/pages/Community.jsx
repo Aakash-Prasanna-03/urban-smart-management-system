@@ -34,75 +34,32 @@ export default function Community() {
   useEffect(() => {
     const fetchIssues = async () => {
       setLoading(true);
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const dummyIssues = [
-        {
-          id: 1,
-          title: "Garbage collection pending",
-          description: "Street near park has garbage piling up for over a week. Creating health hazards.",
-          lat: 28.6139,
-          lng: 77.209,
-          status: 'pending',
-          priority: 'high',
-          category: 'Sanitation',
-          votes: 12,
-          createdAt: '2024-01-15',
-          author: 'Sarah M.'
-        },
-        {
-          id: 2,
-          title: "Street light not working",
-          description: "Main street light has been out since last week, creating safety concerns.",
-          lat: 28.614,
-          lng: 77.208,
-          status: 'in-progress',
-          priority: 'medium',
-          category: 'Infrastructure',
-          votes: 8,
-          createdAt: '2024-01-14',
-          author: 'Alex R.'
-        },
-        {
-          id: 3,
-          title: "Pothole repairs needed",
-          description: "Large potholes on Main Street causing vehicle damage.",
-          lat: 28.615,
-          lng: 77.207,
-          status: 'resolved',
-          priority: 'medium',
-          category: 'Roads',
-          votes: 15,
-          createdAt: '2024-01-10',
-          author: 'Mike D.'
-        },
-        {
-          id: 4,
-          title: "Traffic signal malfunction",
-          description: "Traffic light stuck on red, causing major congestion.",
-          lat: 28.616,
-          lng: 77.210,
-          status: 'pending',
-          priority: 'urgent',
-          category: 'Traffic',
-          votes: 25,
-          createdAt: '2024-01-16',
-          author: 'Lisa K.'
-        }
-      ];
-
-      if (user) {
-        setIssues(dummyIssues);
-        if (user.location) {
+      try {
+        const response = await fetch('/api/issues');
+        const data = await response.json();
+        // data.data is the array of issues from backend
+        const backendIssues = (data && data.data) ? data.data.map(issue => ({
+          id: issue._id,
+          title: issue.title,
+          description: issue.description,
+          lat: issue.location?.lat,
+          lng: issue.location?.lng,
+          status: issue.status,
+          priority: issue.priority,
+          category: issue.category,
+          votes: Array.isArray(issue.upvotes) ? issue.upvotes.length : 0,
+          createdAt: issue.createdAt,
+          author: issue.userEmail || 'Unknown'
+        })) : [];
+        setIssues(backendIssues);
+        if (user && user.location) {
           setMapCenter([user.location.lat, user.location.lng]);
         }
-      } else {
-        setIssues(dummyIssues);
+      } catch (err) {
+        setIssues([]);
       }
       setLoading(false);
     };
-
     fetchIssues();
   }, [user]);
 
@@ -150,6 +107,14 @@ export default function Community() {
                          issue.category.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
+
+  // Remove duplicate issues by title
+  const uniqueFilteredIssues = Object.values(
+    filteredIssues.reduce((acc, issue) => {
+      if (!acc[issue.title]) acc[issue.title] = issue;
+      return acc;
+    }, {})
+  );
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -306,8 +271,8 @@ export default function Community() {
               animate="visible"
               className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
-              {filteredIssues.length > 0 ? (
-                filteredIssues.map((issue, index) => (
+              {uniqueFilteredIssues.length > 0 ? (
+                uniqueFilteredIssues.map((issue, index) => (
                   <motion.div
                     key={issue.id}
                     variants={itemVariants}
@@ -327,36 +292,22 @@ export default function Community() {
                         </span>
                       </div>
 
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-lg text-center">
                         {issue.title}
                       </h3>
-                      
-                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
-                        {issue.description}
-                      </p>
-
-                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center space-x-4">
-                          <span className="flex items-center">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            Location
-                          </span>
-                          <span className="flex items-center">
-                            <Users className="w-3 h-3 mr-1" />
-                            {issue.votes} votes
-                          </span>
-                        </div>
-                        <span>by {issue.author}</span>
-                      </div>
-
-                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {new Date(issue.createdAt).toLocaleDateString()}
-                          </span>
-                          <button className="h-7 px-2 text-xs bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
-                            View Details
-                          </button>
+                      <div className="flex flex-col items-center gap-2 mb-4">
+                        <a
+                          href={issue.lat && issue.lng ? `https://www.google.com/maps/search/?api=1&query=${issue.lat},${issue.lng}` : '#'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 dark:text-blue-400 underline text-sm flex items-center gap-1"
+                        >
+                          <MapPin className="w-4 h-4" />
+                          {issue.location?.address ? issue.location.address : `View Location`}
+                        </a>
+                        <div className="mt-2 flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                          <Users className="w-4 h-4 text-blue-500" />
+                          <span>{issue.votes} people had this issue</span>
                         </div>
                       </div>
                     </div>

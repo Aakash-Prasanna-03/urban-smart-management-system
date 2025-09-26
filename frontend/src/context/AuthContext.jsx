@@ -13,13 +13,23 @@ export function AuthProvider({ children }) {
   };
 
   const login = async (email, password) => {
-    const stored = JSON.parse(localStorage.getItem("userRegistered"));
-    if (!stored || stored.email !== email || stored.password !== password) {
-      return { success: false, message: "Invalid email or password" };
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const result = await response.json();
+      if (response.ok) {
+        setUser(result.user);
+        localStorage.setItem("user", JSON.stringify(result.user));
+        return { success: true };
+      } else {
+        return { success: false, message: result.message || "Login failed" };
+      }
+    } catch (err) {
+      return { success: false, message: "Server error. Please try again." };
     }
-    setUser(stored);
-    localStorage.setItem("user", JSON.stringify(stored));
-    return { success: true };
   };
 
   const logout = () => {

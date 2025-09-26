@@ -25,7 +25,7 @@ UrbanFix/
 │   │   ├── context/       # Admin authentication context
 │   │   └── ...
 │   └── package.json
-├── backend/           # Node.js/Express backend API (Port 5001)
+├── backend/           # Node.js/Express backend API (Port 5000)
 │   ├── src/
 │   │   ├── controllers/   # Business logic
 │   │   ├── models/        # MongoDB schemas
@@ -170,8 +170,8 @@ Make sure you have installed:
 - **User Frontend**: http://localhost:5173 (Citizens report issues)
 - **Admin Portal**: http://localhost:3001 (Administrator dashboard) 
   - Default login: `admin` / `admin123`
-- **Backend API**: http://localhost:5001
-- **API Test**: http://localhost:5001/api/test
+- **Backend API**: http://localhost:5000
+- **API Test**: http://localhost:5000/api/test
 
 ## � Admin Portal
 
@@ -243,7 +243,7 @@ npm run dev
 
 ### Image Upload
 
-Images are served from: `http://localhost:5001/uploads/{filename}`
+Images are served from: `http://localhost:5000/uploads/{filename}`
 
 ## 💾 Database Schema
 
@@ -370,7 +370,7 @@ backend/src/
 **Backend** (`backend/.env`):
 ```env
 MONGODB_URI=mongodb://localhost:27017/urbanfix
-PORT=5001
+PORT=5000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
 ADMIN_URL=http://localhost:3001
@@ -392,7 +392,7 @@ MAX_FILE_SIZE=5242880
    - For MongoDB Atlas, ensure network access is configured
 
 2. **Port Already in Use**
-   - Backend (5001): Change `PORT` in `backend/.env`
+   - Backend (5000): Change `PORT` in `backend/.env`
    - Frontend (5173): Vite will auto-increment port
    - Admin Portal (3001): Change port in `admin/vite.config.js`
 

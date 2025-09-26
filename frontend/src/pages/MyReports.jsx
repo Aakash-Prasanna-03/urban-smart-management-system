@@ -42,7 +42,7 @@ export default function MyReports() {
     try {
       console.log('Fetching reports for user:', user);
       const res = await fetch(
-        `http://localhost:5001/api/issues/user/${user.id || user._id}`
+        `http://localhost:5000/api/issues/user/${user.id || user._id}`
       );
       if (!res.ok) {
         throw new Error(`Server returned ${res.status}`);
@@ -67,37 +67,30 @@ export default function MyReports() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-300 p-6">
       {/* Header */}
-      <header className="max-w-6xl mx-auto mb-8">
-        <div className="flex items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg">
-              <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6M9 16h6M9 8h6M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 leading-tight">
-                My Reports
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
-                Overview of issues you have submitted. Showing{" "}
-                <span className="font-medium text-gray-700 dark:text-gray-100">{myReports.length}</span> reports.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={fetchMyReports}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 shadow hover:shadow-md border border-gray-200 dark:border-gray-700"
-            >
-              <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v6h6M20 20v-6h-6M5 19a9 9 0 1114 0" />
-              </svg>
-              <span className="text-sm text-gray-700 dark:text-gray-200">Refresh</span>
-            </button>
-          </div>
+      <header className="max-w-4xl mx-auto mb-8 text-center flex flex-col items-center justify-center">
+        <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg mb-4">
+          <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6M9 16h6M9 8h6M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
         </div>
+        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 leading-tight mb-2">
+          My Reports
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-300 mb-2">
+          Overview of issues you have submitted.
+        </p>
+        <div className="text-base font-medium text-indigo-700 dark:text-indigo-300 mb-4">
+          Showing <span className="font-bold">{myReports.length}</span> report{myReports.length !== 1 ? 's' : ''}.
+        </div>
+        <button
+          onClick={fetchMyReports}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 shadow hover:shadow-md border border-gray-200 dark:border-gray-700"
+        >
+          <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v6h6M20 20v-6h-6M5 19a9 9 0 1114 0" />
+          </svg>
+          <span className="text-sm text-gray-700 dark:text-gray-200">Refresh</span>
+        </button>
       </header>
 
       {/* Main content */}
@@ -126,7 +119,7 @@ export default function MyReports() {
 
         {/* Loading skeleton */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="p-4 rounded-xl bg-white dark:bg-gray-800 shadow animate-pulse">
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
@@ -160,51 +153,38 @@ export default function MyReports() {
               return (
                 <article
                   key={report._id}
-                  className={`relative p-8 rounded-3xl bg-white dark:bg-gray-800 shadow-2xl hover:shadow-3xl transition-shadow duration-200 border border-indigo-100 dark:border-indigo-700 ${cardHighlight} animate-fade-in min-h-[220px]`}
+                  className={`relative p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow duration-200 border animate-fade-in min-h-[180px] flex flex-col items-center justify-center ${
+                    statusLower === "resolved" || statusLower === "closed" ? "border-green-300 dark:border-green-700" : "border-red-300 dark:border-red-700"
+                  }`}
                 >
-                  <div className="flex items-start gap-6">
-                    <div
-                      className={`flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center ${
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                    style={{ background: statusLower === "pending" ? "#fdecec" : statusLower === "resolved" ? "#e6f4ea" : "#eef2ff" }}>
+                    <svg
+                      className={`w-6 h-6 ${
                         statusLower === "resolved" || statusLower === "closed"
-                          ? "bg-green-50 dark:bg-green-900/30"
+                          ? "text-green-600 dark:text-green-300"
                           : statusLower === "pending"
-                          ? "bg-red-50 dark:bg-red-900/30"
-                          : "bg-indigo-50 dark:bg-indigo-900/30"
+                          ? "text-red-500 dark:text-red-300"
+                          : "text-indigo-500 dark:text-indigo-300"
                       }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
                     >
-                      <svg
-                        className={`w-8 h-8 ${
-                          statusLower === "resolved" || statusLower === "closed"
-                            ? "text-green-600 dark:text-green-300"
-                            : statusLower === "pending"
-                            ? "text-red-600 dark:text-red-300"
-                            : "text-indigo-600 dark:text-indigo-300"
-                        }`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6M9 16h6M9 8h6" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                        {report.title || "Untitled report"}
-                      </h3>
-                      <p className="mb-4 text-lg text-gray-600 dark:text-gray-300 line-clamp-3">
-                        {report.description || "No description provided."}
-                      </p>
-                      <div className="mt-2 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 text-base">
-                          <span className={`px-4 py-2 rounded-full ${statusColor} font-semibold`}>
-                            {status}
-                          </span>
-                          <span className="text-gray-500 dark:text-gray-400">{formattedDate}</span>
-                        </div>
-                      </div>
-                    </div>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6M9 16h6M9 8h6" />
+                    </svg>
                   </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 text-center">
+                    {report.title || "Untitled report"}
+                  </h3>
+                  <p className="mb-4 text-base text-gray-600 dark:text-gray-300 text-center">
+                    {report.description || "No description provided."}
+                  </p>
+                  <span className={`px-4 py-1 rounded-full ${statusColor} font-semibold mb-2 mx-auto block text-center`}>
+                    {status}
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400 text-sm mx-auto block text-center">{formattedDate}</span>
                 </article>
               );
             })}
