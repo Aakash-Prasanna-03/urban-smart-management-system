@@ -15,8 +15,11 @@ const Issues = () => {
 
   const fetchIssues = async () => {
     try {
-      const response = await axios.get(`/api/admin/issues${filter !== 'all' ? `?status=${filter}` : ''}`);
-      setIssues(response.data.issues || []);
+      // Use the grouped issues endpoint
+      const response = await axios.get(`/api/issues${filter !== 'all' ? `?status=${filter}` : ''}`);
+      // If response.data.data exists, use it (grouped format)
+      const grouped = response.data.data || [];
+      setIssues(grouped);
     } catch (error) {
       console.error('Error fetching issues:', error);
     } finally {
@@ -85,61 +88,55 @@ const Issues = () => {
               <thead className="bg-blue-50">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wide">Issue Details</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wide">Category</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wide">Location</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wide">Upvotes</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wide">Status</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wide">User</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wide">Date</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wide">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-blue-50">
-                {issues.map((issue) => (
-                  <tr key={issue._id} className="transition hover:bg-blue-50">
+                {issues.map((group) => (
+                  <tr key={group._id} className="transition hover:bg-blue-50">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-4">
-                        {issue.image && (
-                          <img src={`/uploads/${issue.image}`} alt="Issue" className="h-10 w-10 rounded-lg object-cover border border-blue-100" />
+                        {group.image && (
+                          <img src={`/uploads/${group.image}`} alt="Issue" className="h-10 w-10 rounded-lg object-cover border border-blue-100" />
                         )}
                         <div>
-                          <div className="text-base font-bold text-blue-900">{issue.title}</div>
-                          <div className="text-sm text-gray-500 truncate max-w-xs">{issue.description}</div>
-                          {issue.location && Array.isArray(issue.location.coordinates) && (
-                            <div className="flex items-center text-xs text-blue-400 mt-1">
-                              <MapPin className="h-3 w-3 mr-1" />
-                              {issue.location.coordinates[1]}, {issue.location.coordinates[0]}
-                            </div>
-                          )}
+                          <div className="text-base font-bold text-blue-900">
+                            {group.title.split(' / ')[0].trim()}
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5 whitespace-nowrap">
-                      <select
-                        value={issue.status}
-                        onChange={(e) => updateIssueStatus(issue._id, e.target.value)}
-                        className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border-0 transition ${getStatusColor(issue.status)} focus:outline-none focus:ring-2 focus:ring-blue-400`}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                      </select>
+                    <td className="px-6 py-5 text-blue-900">
+                      {(() => {
+                        switch (group.category) {
+                          case 'infrastructure': return 'Infrastructure';
+                          case 'sanitation': return 'Sanitation';
+                          case 'traffic': return 'Traffic';
+                          case 'public-safety': return 'Public Safety';
+                          case 'environment': return 'Environment';
+                          case 'utilities': return 'Utilities';
+                          case 'other': return 'Other';
+                          case 'unrelated': return <span className="text-blue-600 font-semibold">Unrelated</span>;
+                          default: return group.category.charAt(0).toUpperCase() + group.category.slice(1);
+                        }
+                      })()}
                     </td>
-                    <td className="px-6 py-5 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-blue-400 mr-2" />
-                        <div>
-                          <div className="text-sm text-blue-900 font-medium">{issue.userEmail}</div>
-                          <div className="text-xs text-gray-400">{issue.userPhone}</div>
-                        </div>
-                      </div>
+                    <td className="px-6 py-5">
+                      {group.location ? `${group.location.lat?.toFixed(4)}, ${group.location.lng?.toFixed(4)}` : '-'}
                     </td>
-                    <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1 text-blue-400" />
-                        {new Date(issue.createdAt).toLocaleDateString()}
-                      </div>
+                    <td className="px-6 py-5 text-center font-semibold text-blue-700">{group.peopleCount}</td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border-0 transition ${getStatusColor(group.status)} focus:outline-none focus:ring-2 focus:ring-blue-400`}>
+                        {group.status.charAt(0).toUpperCase() + group.status.slice(1)}
+                      </span>
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap text-sm font-medium">
                       <button
-                        onClick={() => openModal(issue)}
+                        onClick={() => openModal(group)}
                         className="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg shadow transition flex items-center gap-2"
                       >
                         <Eye className="h-4 w-4" />
@@ -165,7 +162,7 @@ const Issues = () => {
             <div className="mt-3">
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-2xl font-extrabold text-blue-900">
-                  {selectedIssue.title}
+                  {selectedIssue.title ? selectedIssue.title.split(' / ')[0].trim() : ''}
                 </h3>
                 <button
                   onClick={closeModal}
@@ -176,37 +173,44 @@ const Issues = () => {
                 </button>
               </div>
               
-              <div className="space-y-4">
-                {selectedIssue.image && (
-                  <div className="mb-4">
-                    <img
-                      src={`/uploads/${selectedIssue.image}`}
-                      alt="Issue"
-                      className="max-w-full h-48 w-full object-cover rounded-xl shadow-md border border-blue-100"
-                    />
-                    <div className="mt-4">
-                      <label className="block text-base font-semibold text-blue-700">Description</label>
-                      <p className="mt-2 text-base text-gray-900 bg-blue-50 rounded-lg p-3 shadow-sm">{selectedIssue.description}</p>
+                <div className="space-y-4">
+                  {selectedIssue.image && (
+                    <div className="mb-4">
+                      <img
+                        src={`/uploads/${selectedIssue.image}`}
+                        alt="Issue"
+                        className="max-w-full h-48 w-full object-cover rounded-xl shadow-md border border-blue-100"
+                      />
+                      <div className="mt-4">
+                        <label className="block text-base font-semibold text-blue-700">Description Summary</label>
+                        <p className="mt-2 text-base text-gray-900 bg-blue-50 rounded-lg p-3 shadow-sm">
+                          {selectedIssue.geminiSummary
+                            ? selectedIssue.geminiSummary
+                            : (selectedIssue.description
+                              ? selectedIssue.description.split('|').map((desc, idx) => (
+                                  <span key={idx} style={{display: 'block', marginBottom: '4px'}}>{desc.trim()}</span>
+                                ))
+                              : 'No summary available.')}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )}
-                {!selectedIssue.image && (
-                  <div className="mb-4">
-                    <label className="block text-base font-semibold text-blue-700">Description</label>
-                    <p className="mt-2 text-base text-gray-900 bg-blue-50 rounded-lg p-3 shadow-sm">{selectedIssue.description}</p>
-                  </div>
-                )}
+                  )}
+                  {!selectedIssue.image && (
+                    <div className="mb-4">
+                      <label className="block text-base font-semibold text-blue-700">Description Summary</label>
+                      <p className="mt-2 text-base text-gray-900 bg-blue-50 rounded-lg p-3 shadow-sm">
+                        {selectedIssue.geminiSummary
+                          ? selectedIssue.geminiSummary
+                          : (selectedIssue.description
+                            ? selectedIssue.description.split('|').map((desc, idx) => (
+                                <span key={idx} style={{display: 'block', marginBottom: '4px'}}>{desc.trim()}</span>
+                              ))
+                            : 'No summary available.')}
+                      </p>
+                    </div>
+                  )}
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-blue-700">User Email</label>
-                    <p className="mt-1 text-sm text-blue-900">{selectedIssue.userEmail}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-blue-700">Phone</label>
-                    <p className="mt-1 text-sm text-blue-900">{selectedIssue.userPhone}</p>
-                  </div>
-                </div>
+                {/* User Email and Phone removed as requested */}
 
                 {selectedIssue.location && Array.isArray(selectedIssue.location.coordinates) && (
                   <div>
@@ -233,8 +237,8 @@ const Issues = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-blue-700">Upvotes</label>
-                  <p className="mt-1 text-sm text-blue-900">{selectedIssue.upvotes || 0}</p>
+                  <label className="block text-sm font-medium text-blue-700">Upvotes (People Count)</label>
+                  <p className="mt-1 text-lg font-bold text-blue-900">{selectedIssue.peopleCount || 0}</p>
                 </div>
               </div>
 

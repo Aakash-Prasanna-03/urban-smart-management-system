@@ -23,6 +23,7 @@ import Issue from '../models/Issue.js';
 import haversine from 'haversine-distance';
 import fs from 'fs';
 import path from 'path';
+import { getGeminiResponse } from './chatbotController.js';
 
 // Get all issues
 export const getAllIssues = async (req, res) => {
@@ -54,34 +55,45 @@ export const getAllIssues = async (req, res) => {
     }
 
     // Format as a single issue per group, merging upvotes and info
-    const formatted = grouped.map(group => {
+    const formatted = await Promise.all(grouped.map(async group => {
       // All issues in this group have the same category
       const category = group[0].category;
-      // Only merge titles/descriptions from this category
-      // Merge upvotes from all issues in the group, deduplicate
-      let allUpvotes = [...new Set(group.flatMap(issue => issue.upvotes))];
-      // Also count each unique user who reported an issue in this group as an upvote
+      // Group status: most common status in group
+      const statusCounts = {};
+      group.forEach(issue => {
+        statusCounts[issue.status] = (statusCounts[issue.status] || 0) + 1;
+      });
+      const groupStatus = Object.entries(statusCounts).sort((a, b) => b[1] - a[1])[0][0];
+      // Count unique users who reported issues in this group
       const reporterIds = [...new Set(group.map(issue => issue.userId))];
-      // Merge both sets
-      allUpvotes = [...new Set([...allUpvotes, ...reporterIds])];
-      const upvoteCount = allUpvotes.length;
+      const peopleCount = reporterIds.length;
       const titles = group.map(issue => issue.title).join(' / ');
       const descriptions = group.map(issue => issue.description).join(' | ');
+      // Get Gemini summary for all descriptions
+      let geminiSummary = '';
+      try {
+        const summary = await getGeminiResponse(`Summarize these urban issue descriptions for admin review: ${descriptions}`);
+        if (!summary || summary.toLowerCase().includes('sorry') || summary.toLowerCase().includes('something went wrong')) {
+          geminiSummary = '';
+        } else {
+          geminiSummary = summary;
+        }
+      } catch (err) {
+        geminiSummary = '';
+      }
       return {
         _id: group[0]._id,
         title: titles,
         description: descriptions,
+        geminiSummary,
         category,
+        status: groupStatus,
         location: group[0].location,
         image: group[0].image,
-        upvotes: allUpvotes,
-        upvoteCount,
+        peopleCount,
         createdAt: group[0].createdAt
       };
-    });
-
-    // Sort by upvoteCount descending
-    formatted.sort((a, b) => b.upvoteCount - a.upvoteCount);
+    }));
 
     res.json({
       success: true,

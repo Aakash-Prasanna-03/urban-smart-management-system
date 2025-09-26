@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FileText, Users, Clock, CheckCircle } from 'lucide-react';
+import { FileText, Users, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -9,22 +9,22 @@ const Dashboard = () => {
     resolvedIssues: 0,
     totalUsers: 0
   });
-  const [recentIssues, setRecentIssues] = useState([]);
+  const [groupedIssues, setGroupedIssues] = useState([]);
+  const [riskFilter, setRiskFilter] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [riskFilter]);
 
   const fetchDashboardData = async () => {
     try {
-      const [statsResponse, issuesResponse] = await Promise.all([
-        axios.get('/api/admin/stats'),
-        axios.get('/api/admin/issues?limit=5')
-      ]);
-
+      const statsResponse = await axios.get('/api/admin/stats');
       setStats(statsResponse.data);
-      setRecentIssues(issuesResponse.data.issues || []);
+      // Fetch grouped issues with risk levels
+      const riskParam = riskFilter ? `?risk=${riskFilter}` : '';
+      const groupedResponse = await axios.get(`/api/risk/grouped${riskParam}`);
+      setGroupedIssues(groupedResponse.data.data || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -91,45 +91,86 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        {/* Recent Issues */}
-        <div className="bg-white shadow-lg rounded-2xl border border-blue-100">
+        {/* Grouped Issues with Risk Level */}
+        <div className="bg-white shadow-lg rounded-2xl border border-blue-100 mt-10">
           <div className="px-8 py-8">
-            <h3 className="text-2xl font-bold text-blue-900 mb-6">Recent Issues</h3>
-            {recentIssues.length > 0 ? (
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-blue-900">Grouped Issues by Location & Risk</h3>
+              <div>
+                <label className="mr-2 font-semibold text-blue-700">Filter by Risk:</label>
+                <select
+                  value={riskFilter}
+                  onChange={e => setRiskFilter(e.target.value)}
+                  className="border border-blue-200 rounded-lg px-3 py-2 text-blue-900 bg-blue-50 focus:outline-none"
+                >
+                  <option value="">All</option>
+                  <option value="low">Low</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+            </div>
+            {groupedIssues.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-blue-100 text-lg">
                   <thead className="bg-blue-50">
                     <tr>
                       <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Title</th>
-                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Status</th>
-                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">User</th>
+                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Category</th>
+                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Location</th>
+                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Upvotes</th>
                       <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Date</th>
+                      <th className="px-6 py-4 text-left font-semibold text-blue-800 uppercase tracking-wide">Risk Level</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-blue-50">
-                    {recentIssues.map((issue) => (
+                    {groupedIssues.map((issue) => (
                       <tr key={issue._id} className="transition hover:bg-blue-50">
                         <td className="px-6 py-5 font-bold text-blue-900">{issue.title}</td>
-                        <td className="px-6 py-5">
-                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                            issue.status === 'resolved' 
-                              ? 'bg-green-100 text-green-800'
-                              : issue.status === 'in-progress'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {issue.status}
-                          </span>
+                        <td className="px-6 py-5 text-blue-900">
+                          {(() => {
+                            switch (issue.category) {
+                              case 'infrastructure': return 'Infrastructure';
+                              case 'sanitation': return 'Sanitation';
+                              case 'traffic': return 'Traffic';
+                              case 'public-safety': return 'Public Safety';
+                              case 'environment': return 'Environment';
+                              case 'utilities': return 'Utilities';
+                              case 'other': return 'Other';
+                              case 'unrelated': return <span className="text-blue-600 font-semibold">Unrelated</span>;
+                              default: return issue.category;
+                            }
+                          })()}
                         </td>
-                        <td className="px-6 py-5 text-blue-900 font-medium">{issue.userEmail}</td>
+                        <td className="px-6 py-5 text-blue-900">{`(${issue.location.lat.toFixed(4)}, ${issue.location.lng.toFixed(4)})`}</td>
+                        <td className="px-6 py-5 text-blue-900 font-medium">{issue.upvoteCount}</td>
                         <td className="px-6 py-5 text-blue-900">{new Date(issue.createdAt).toLocaleDateString()}</td>
+                        <td className="px-6 py-5">
+                          {issue.category === 'unrelated' ? (
+                            <span className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                              <AlertTriangle className="h-4 w-4" />
+                              Not an Issue
+                            </span>
+                          ) : (
+                            <span className={`inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold rounded-full ${
+                              issue.riskLevel === 'urgent'
+                                ? 'bg-red-100 text-red-800'
+                                : issue.riskLevel === 'moderate'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-green-100 text-green-800'
+                            }`}>
+                              <AlertTriangle className="h-4 w-4" />
+                              {issue.riskLevel.charAt(0).toUpperCase() + issue.riskLevel.slice(1)}
+                            </span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              <p className="text-blue-400">No recent issues found.</p>
+              <p className="text-blue-400">No grouped issues found.</p>
             )}
           </div>
         </div>
