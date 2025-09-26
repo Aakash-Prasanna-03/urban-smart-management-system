@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/database.js';
 import issuesRouter from './routes/issues.js';
 import adminRouter from './routes/admin.js';
-import chatRouter from './routes/chat.js';
+import chatRouter from './routes/chatbot.js';
 import riskRouter from './routes/risk.js';
 
 // Load environment variables
@@ -44,11 +44,11 @@ app.get('/api/test', (req, res) => {
 
 // API routes
 import authRouter from './routes/auth.js';
-app.use('/api/auth', authRouter);
 app.use('/api/issues', issuesRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/chatbot', chatRouter);
-app.use('/api/risk', riskRouter); // New risk route for admin
+app.use('/api/risk', riskRouter);
 
 // Global error handler
 app.use((error, req, res, next) => {
