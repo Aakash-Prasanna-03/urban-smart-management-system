@@ -256,9 +256,17 @@ export default function HomePage() {
               variants={itemVariants}
               className="max-w-4xl mx-auto text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-12 leading-relaxed"
             >
-              Revolutionize civic engagement with cutting-edge AI technology. Our platform combines 
-              <span className="font-semibold text-blue-600 dark:text-blue-400"> computer vision, natural language processing,</span> and 
-              <span className="font-semibold text-purple-600 dark:text-purple-400"> community intelligence</span> to solve urban challenges faster than ever before.
+            Transforming civic engagement with advanced AI. Our platform leverages{' '}
+            <span className="font-semibold text-blue-600 dark:text-blue-400">
+              computer vision and natural language processing
+            </span>{' '}
+            along with{' '}
+            <span className="font-semibold text-purple-600 dark:text-purple-400">
+              community-driven insights
+            </span>{' '}
+            to address urban challenges quickly and effectively.
+
+
             </motion.p>
 
             {/* CTA Buttons */}
@@ -284,7 +292,7 @@ export default function HomePage() {
                 whileTap={{ scale: 0.98 }}
               >
                 <Play className="w-5 h-5 mr-2" />
-                Watch Demo
+                See Issues in my area
                 <Eye className="w-5 h-5 ml-2 group-hover:scale-110 transition-transform" />
               </motion.button>
             </motion.div>

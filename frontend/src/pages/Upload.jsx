@@ -695,7 +695,7 @@ export default function UploadPage() {
                 Emergency Situations
               </h3>
               <p className="text-sm text-red-800 dark:text-red-400">
-                For immediate emergencies requiring urgent attention, please contact emergency services directly at 911 or your local emergency number.
+                For immediate emergencies requiring urgent attention, please contact emergency services directly at 100 or your local emergency number.
               </p>
             </div>
           </div>

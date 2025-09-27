@@ -24,108 +24,64 @@ export default function Login() {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleLogin}>
-        <h1>Login</h1>
-        {error && <p className="error">{error}</p>}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+      style={{
+        backgroundImage: `url('login.png')`
+      }}
+    >
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-      <style>{`
-        body {
-          margin: 0;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+      <div className="relative z-10 bg-white/10 backdrop-blur-xl shadow-2xl rounded-2xl p-10 max-w-md w-full space-y-6 border border-white/20">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-4xl font-extrabold text-white drop-shadow-lg tracking-wide">
+            Login
+          </h1>
+          <p className="mt-3 text-sm text-gray-200">
+            Access your{" "}
+            <span className="font-semibold text-indigo-300">UrbanFix</span> account
+          </p>
+        </div>
 
-        .login-container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-          background: linear-gradient(135deg, #6b73ff, #000dff);
-        }
+        {/* Form */}
+        <form className="space-y-6" onSubmit={handleLogin}>
+          {error && (
+            <div className="bg-red-600/80 text-red-100 border border-red-400/60 px-4 py-3 rounded-md text-sm animate-pulse">
+              {error}
+            </div>
+          )}
 
-        .login-form {
-          background: white;
-          padding: 40px 30px;
-          border-radius: 20px;
-          box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-          width: 360px;
-          display: flex;
-          flex-direction: column;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+          {/* Email */}
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="block w-full pl-4 pr-3 py-3 rounded-lg bg-white/10 border border-white/20 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 sm:text-sm transition"
+          />
 
-        .login-form:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 30px 60px rgba(0,0,0,0.25);
-        }
+          {/* Password */}
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="block w-full pl-4 pr-3 py-3 rounded-lg bg-white/10 border border-white/20 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 sm:text-sm transition"
+          />
 
-        h1 {
-          margin-bottom: 25px;
-          text-align: center;
-          color: #333;
-          font-size: 28px;
-        }
-
-        .login-form input {
-          padding: 12px 15px;
-          margin-bottom: 15px;
-          border-radius: 10px;
-          border: 1px solid #ccc;
-          font-size: 16px;
-          transition: border 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .login-form input:focus {
-          border-color: #6b73ff;
-          box-shadow: 0 0 8px rgba(107, 115, 255, 0.4);
-          outline: none;
-        }
-
-        .login-form button {
-          padding: 12px 15px;
-          background: #6b73ff;
-          color: white;
-          border: none;
-          border-radius: 10px;
-          font-size: 16px;
-          cursor: pointer;
-          transition: background 0.3s ease, transform 0.2s ease;
-        }
-
-        .login-form button:hover {
-          background: #5a63e0;
-          transform: translateY(-2px);
-        }
-
-        .error {
-          color: #e53e3e;
-          margin-bottom: 15px;
-          text-align: center;
-        }
-
-        @media (max-width: 400px) {
-          .login-form {
-            width: 90%;
-            padding: 30px 20px;
-          }
-        }
-      `}</style>
+          {/* Button */}
+          <button
+            type="submit"
+            className="w-full flex justify-center py-3 px-4 rounded-lg text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-300 transition-all shadow-lg hover:shadow-indigo-500/40"
+          >
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
