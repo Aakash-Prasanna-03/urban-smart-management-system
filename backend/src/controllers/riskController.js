@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 
 // Helper: Call Gemini API for risk analysis
 async function analyzeRiskWithGemini(description, apiKey) {
-	const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+	const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 	const prompt = `You are an expert in urban infrastructure. Analyze the following issue descriptions and categorize the risk level as low, moderate, or urgent. Only real urban infrastructure, sanitation, traffic, environment, or public-safety issues should be moderate or urgent. All unrelated, spam, or non-urban issues must be classified as low. Respond ONLY with the risk level.\nDescriptions: ${description}`;
 	const body = {
 		contents: [{ parts: [{ text: prompt }] }]
@@ -87,7 +87,7 @@ export const getGroupedIssuesWithRisk = async (req, res) => {
 					if (detectedCategory === 'other' && apiKey) {
 						const prompt = `Given the following urban issue description, classify it into one of these categories: infrastructure, sanitation, traffic, public-safety, environment, utilities, other, unrelated. Respond ONLY with the category.\nDescription: ${descText}`;
 						try {
-							const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+							const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
 								{
 									method: 'POST',
 									headers: { 'Content-Type': 'application/json' },

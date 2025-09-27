@@ -1,8 +1,44 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } }
+};
 import { useAuth } from "../context/AuthContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { MapPin, Users, Clock, AlertTriangle, CheckCircle, Filter, Search, Trash2, Lightbulb, Wrench } from "lucide-react";
+import { FileText } from "lucide-react";
+// Category icon and description mapping
+const categoryMeta = {
+  'Infrastructure': {
+    icon: <Lightbulb className="w-5 h-5 text-yellow-600" />,
+    desc: 'Roads, bridges, utilities'
+  },
+  'Sanitation': {
+    icon: <Trash2 className="w-5 h-5 text-gray-600" />,
+    desc: 'Waste management, cleaning'
+  },
+  'Traffic': {
+    icon: <Wrench className="w-5 h-5 text-red-600" />,
+    desc: 'Traffic lights, signs, congestion'
+  },
+  'Public Safety': {
+    icon: <AlertTriangle className="w-5 h-5 text-blue-600" />,
+    desc: 'Street lights, security'
+  },
+  'Environment': {
+    icon: <MapPin className="w-5 h-5 text-green-600" />,
+    desc: 'Pollution, green spaces'
+  },
+  'Utilities': {
+    icon: <CheckCircle className="w-5 h-5 text-orange-600" />,
+    desc: 'Water, electricity, gas'
+  },
+  'Other': {
+    icon: <FileText className="w-5 h-5 text-gray-400" />,
+    desc: 'Other civic issues'
+  }
+};
 import "leaflet/dist/leaflet.css";
 
 export default function Community() {
@@ -35,9 +71,9 @@ export default function Community() {
     const fetchIssues = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/api/issues');
+        const response = await fetch('/api/risk/grouped');
         const data = await response.json();
-        // data.data is the array of issues from backend
+        // data.data is the array of grouped issues from backend
         const backendIssues = (data && data.data) ? data.data.map(issue => ({
           id: issue._id,
           title: issue.title,
@@ -47,7 +83,7 @@ export default function Community() {
           status: issue.status,
           priority: issue.priority,
           category: issue.category,
-          votes: Array.isArray(issue.upvotes) ? issue.upvotes.length : 0,
+          upvoteCount: issue.upvoteCount ?? (Array.isArray(issue.upvotes) ? issue.upvotes.length : 0),
           createdAt: issue.createdAt,
           author: issue.userEmail || 'Unknown'
         })) : [];
@@ -108,23 +144,12 @@ export default function Community() {
     return matchesFilter && matchesSearch;
   });
 
-  // Remove duplicate issues by title
-  const uniqueFilteredIssues = Object.values(
-    filteredIssues.reduce((acc, issue) => {
-      if (!acc[issue.title]) acc[issue.title] = issue;
-      return acc;
-    }, {})
-  );
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
+    const uniqueFilteredIssues = Object.values(
+      filteredIssues.reduce((acc, issue) => {
+        if (!acc[issue.title]) acc[issue.title] = issue;
+        return acc;
+      }, {})
+    );
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -137,78 +162,48 @@ export default function Community() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-blue-950 dark:to-indigo-950">
-      {/* Hero Section */}
-      <section className="relative py-16 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 dark:from-blue-600/20 dark:to-purple-600/20" />
-        <div className="absolute top-10 left-10 w-72 h-72 bg-blue-200/20 dark:bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-200/20 dark:bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-white/20 dark:border-gray-800/20 mb-6">
-              <Users className="w-4 h-4 text-blue-600 mr-2" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Community Dashboard</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Community <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Issues</span>
-            </h1>
-            
-            {!user ? (
-              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                You are viewing as a guest. Login to report issues and see nearby reports with enhanced features.
-              </p>
-            ) : (
-              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                Welcome back! Track and resolve community issues in your area with AI-powered insights.
-              </p>
-            )}
-          </motion.div>
-
-          {/* Filters and Search */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col md:flex-row gap-4 mb-8"
-          >
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search issues or categories..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-            
-            <div className="flex gap-2">
-              {['all', 'pending', 'in-progress', 'resolved'].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setFilter(status)}
-                  className={`inline-flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    filter === status
-                      ? 'bg-blue-600 text-white shadow-lg'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <Filter className="w-4 h-4 mr-2" />
-                  {status === 'all' ? 'All' : status.replace('-', ' ').replace(/^\w/, c => c.toUpperCase())}
-                </button>
-              ))}
-            </div>
-          </motion.div>
+      {/* Top Heading like Dashboard */}
+      <div className="py-12">
+        <div className="max-w-5xl mx-auto px-4">
+          <h1 className="text-4xl font-extrabold text-blue-900 mb-8 tracking-tight text-center">Community Issues</h1>
         </div>
-      </section>
+      </div>
 
-      {/* Map Section - NOW WITH ACTUAL MAP */}
+      {/* Filters and Search */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="flex flex-col md:flex-row gap-4 mb-8"
+      >
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search issues or categories..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          />
+        </div>
+        <div className="flex gap-2">
+          {['all', 'pending', 'in-progress', 'resolved'].map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilter(status)}
+              className={`inline-flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                filter === status
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+            >
+              <Filter className="w-4 h-4 mr-2" />
+              {status === 'all' ? 'All' : status.replace('-', ' ').replace(/^\w/, c => c.toUpperCase())}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
       <motion.section
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -236,7 +231,8 @@ export default function Community() {
                           {issue.status}
                         </span>
                         <div className="flex items-center gap-2 text-gray-500">
-                          <span>{issue.votes} votes</span>
+                          <Users className="w-4 h-4 text-blue-500" />
+                          <span>{typeof issue.upvoteCount === 'number' ? issue.upvoteCount : 0} people had this issue</span>
                           <span>•</span>
                           <span>{issue.author}</span>
                         </div>
@@ -283,8 +279,9 @@ export default function Community() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center space-x-2">
                           {getStatusIcon(issue.status)}
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
-                            {issue.category}
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-900 border border-blue-200">
+                            {categoryMeta[issue.category]?.icon || categoryMeta['Other'].icon}
+                            <span className="ml-1 font-semibold">{issue.category}</span>
                           </span>
                         </div>
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(issue.priority)}`}>
@@ -292,9 +289,14 @@ export default function Community() {
                         </span>
                       </div>
 
+                      {/* Main issue in heading (first part before '/') */}
                       <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-lg text-center">
-                        {issue.title}
+                        {issue.title ? issue.title.split(' / ')[0].trim() : issue.title}
                       </h3>
+                      {/* Category description */}
+                      <div className="text-xs text-gray-500 text-center mb-2">
+                        {categoryMeta[issue.category]?.desc || categoryMeta['Other'].desc}
+                      </div>
                       <div className="flex flex-col items-center gap-2 mb-4">
                         <a
                           href={issue.lat && issue.lng ? `https://www.google.com/maps/search/?api=1&query=${issue.lat},${issue.lng}` : '#'}
@@ -306,8 +308,8 @@ export default function Community() {
                           {issue.location?.address ? issue.location.address : `View Location`}
                         </a>
                         <div className="mt-2 flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                          <Users className="w-4 h-4 text-blue-500" />
-                          <span>{issue.votes} people had this issue</span>
+                    <Users className="w-4 h-4 text-blue-500" />
+                    <span>{typeof issue.upvoteCount === 'number' ? issue.upvoteCount : 0} people had this issue</span>
                         </div>
                       </div>
                     </div>

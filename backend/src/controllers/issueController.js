@@ -57,16 +57,33 @@ export const getAllIssues = async (req, res) => {
     // Format as a single issue per group, merging upvotes and info
     const formatted = await Promise.all(grouped.map(async group => {
       // All issues in this group have the same category
-      const category = group[0].category;
+      let category = group[0].category;
+      // Strict allowed categories
+      const allowedCategories = {
+        'infrastructure': 'Infrastructure',
+        'sanitation': 'Sanitation',
+        'traffic': 'Traffic',
+        'public-safety': 'Public Safety',
+        'environment': 'Environment',
+        'utilities': 'Utilities',
+        'other': 'Other'
+      };
+      category = category ? category.toLowerCase() : '';
+      if (allowedCategories[category]) {
+        category = allowedCategories[category];
+      } else {
+        category = 'Other';
+      }
+
       // Group status: most common status in group
       const statusCounts = {};
       group.forEach(issue => {
         statusCounts[issue.status] = (statusCounts[issue.status] || 0) + 1;
       });
       const groupStatus = Object.entries(statusCounts).sort((a, b) => b[1] - a[1])[0][0];
-      // Count unique users who reported issues in this group
-      const reporterIds = [...new Set(group.map(issue => issue.userId))];
-      const peopleCount = reporterIds.length;
+  // Count total upvotes for all issues in this group
+  const upvoteCount = group.reduce((sum, issue) => sum + (Array.isArray(issue.upvotes) ? issue.upvotes.length : 0), 0);
+  const peopleCount = upvoteCount;
       const titles = group.map(issue => issue.title).join(' / ');
       const descriptions = group.map(issue => issue.description).join(' | ');
       return {
