@@ -17,11 +17,11 @@ UrbanFix is a modern, AI-powered full-stack platform for citizens and administra
 
 ### User Portal
 <p align="center">
-   <img src="frontend/pictures/userreports.png" alt="User Reports" width="800" />
+   <img src="frontend/pictures/reports+chatbot.png" alt="User Reports" width="800" />
    <br><em>My Reports & Chatbot: Track submitted issues and get real-time help</em>
 </p>
 <p align="center">
-   <img src="frontend/pictures/userupload.png" alt="Report a Civic Issue" width="800" />
+   <img src="frontend/pictures/upload.png" alt="Report a Civic Issue" width="800" />
    <br><em>Report a Civic Issue: Upload and categorize issues with a guided form</em>
 </p>
 
