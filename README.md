@@ -3,7 +3,7 @@
 UrbanFix is a modern, AI-powered full-stack platform for citizens and administrators to report, track, and resolve urban infrastructure issues. Built for hackathons, city challenges, and real-world deployment.
 
 ---
-## 🌈 Screenshots
+## Screenshots
 
 ### Admin Portal
 <p align="center">
@@ -438,48 +438,7 @@ Make sure you have installed:
 - [MongoDB](https://www.mongodb.com/try/download/community) (local installation) or MongoDB Atlas account
 - Git
 
-### Option 1: Automated Setup (Recommended)
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd UrbanFix
-   ```
-
-2. **Run the setup script**
-   ```bash
-   # On Windows
-   setup.bat
-   
-   # The script will:
-   # - Install all dependencies for both frontend and backend
-   # - Create environment configuration files
-   # - Set up project structure
-   ```
-
-3. **Configure environment**
-   
-   Edit `backend/.env` file with your MongoDB connection:
-   ```env
-   MONGODB_URI=mongodb://localhost:27017/urbanfix
-   # Or for MongoDB Atlas:
-   # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/urbanfix
-   ```
-
-4. **Start the applications**
-   ```bash
-   # Terminal 1 - Start Backend
-   start-backend.bat
-   
-   # Terminal 2 - Start Frontend  
-   start-frontend.bat
-   
-   # Terminal 3 - Start Admin Portal
-   cd admin
-   npm run dev
-   ```
-
-### Option 2: Manual Setup
+Manual Setup
 
 1. **Backend Setup**
    ```bash
@@ -771,21 +730,3 @@ npm run dev
 - Add comments for complex logic
 - Test thoroughly before submitting
 - Update documentation as needed
-
-## 📄 License
-
-This project is part of a hackathon submission for urban infrastructure management.
-
-## 🙏 Acknowledgments
-
-- MongoDB for database solutions
-- React team for the excellent framework
-- Express.js community for backend tooling
-- Leaflet for mapping capabilities
-- Tailwind CSS for styling utilities
-
----
-
-**Happy coding! 🎉**
-
-For questions or support, please check the troubleshooting section or create an issue in the repository."# Urban-fix" 
