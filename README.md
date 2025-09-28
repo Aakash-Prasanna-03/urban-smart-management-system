@@ -2,11 +2,46 @@
 
 # 🚀 UrbanFix - Smart Urban Issue Reporting & Management
 
-> **UrbanFix** is a modern full-stack platform for citizens and administrators to report, track, and resolve urban infrastructure issues. Built for hackathons, city challenges, and real-world deployment.
+<p align="center">
+   <img src="admin/public/admin.png" alt="UrbanFix Admin Dashboard" width="80" />
+</p>
+
+**UrbanFix** is a modern, AI-powered full-stack platform for citizens and administrators to report, track, and resolve urban infrastructure issues. Built for hackathons, city challenges, and real-world deployment.
 
 ---
 
-## 🌟 Features
+## 🌈 Project Screenshots
+
+### 🛡️ Admin Portal
+
+<p align="center">
+   <img src="https://raw.githubusercontent.com/Aakash-Prasanna-03/urban-smart-management-system/main/.github/screenshots/admin-dashboard.png" alt="Admin Dashboard" width="800" />
+   <br><em><b>Admin Dashboard:</b> Community Dashboard with grouped issues, risk levels, and stats</em>
+</p>
+
+<p align="center">
+   <img src="https://raw.githubusercontent.com/Aakash-Prasanna-03/urban-smart-management-system/main/.github/screenshots/admin-login.png" alt="Admin Login" width="500" />
+   <br><em><b>Admin Login:</b> Secure authentication for administrators</em>
+</p>
+
+---
+
+### 👤 User Portal (Frontend)
+
+<p align="center">
+   <img src="https://raw.githubusercontent.com/Aakash-Prasanna-03/urban-smart-management-system/main/.github/screenshots/user-reports.png" alt="User Reports" width="800" />
+   <br><em><b>My Reports & Chatbot:</b> Track your submitted issues and get real-time help from the Civic Assistant chatbot.</em>
+</p>
+
+<p align="center">
+   <img src="https://raw.githubusercontent.com/Aakash-Prasanna-03/urban-smart-management-system/main/.github/screenshots/user-upload.png" alt="Report a Civic Issue" width="800" />
+   <br><em><b>Report a Civic Issue:</b> Upload and categorize issues (infrastructure, sanitation, traffic, etc.) with a guided, user-friendly form.</em>
+</p>
+
+---
+
+
+## �🌟 Features
 
 ### 👥 For Citizens
 - Report issues (potholes, streetlights, sanitation, etc.) with images, location, and description
@@ -28,6 +63,17 @@
 - Tailwind CSS for beautiful UI
 - Leaflet for interactive maps
 - Gemini API for risk and summary analysis
+
+---
+
+
+## 🧑‍💻 Skills & Tech Stack
+
+- **Full-Stack Web Development:** React (Vite), Node.js/Express, MongoDB, Tailwind CSS, Firebase
+- **AI & Machine Learning:** Google Gemini API integration for risk analysis, real-time recommendations
+- **DevOps & Project Management:** Modular codebase, setup scripts, environment management
+- **UI/UX:** Professional, accessible design, dark/light mode, mobile responsiveness, interactive dashboards
+- **Security:** JWT authentication, secure admin portal, real-time monitoring
 
 ---
 
