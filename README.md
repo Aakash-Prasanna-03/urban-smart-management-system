@@ -1,3 +1,134 @@
+# 🚀 UrbanFix - Smart Urban Issue Reporting & Management
+
+UrbanFix is a modern, AI-powered full-stack platform for citizens and administrators to report, track, and resolve urban infrastructure issues. Built for hackathons, city challenges, and real-world deployment.
+
+---
+## 🌈 Screenshots
+
+### Admin Portal
+<p align="center">
+   <img src="frontend/pictures/admindashboard.png" alt="Admin Dashboard" width="800" />
+   <br><em>Admin Dashboard: Grouped issues, risk levels, and stats</em>
+</p>
+<p align="center">
+   <img src="frontend/pictures/adminlogin.png" alt="Admin Login" width="400" />
+   <br><em>Admin Login: Secure authentication for administrators</em>
+</p>
+
+### User Portal
+<p align="center">
+   <img src="frontend/pictures/userreports.png" alt="User Reports" width="800" />
+   <br><em>My Reports & Chatbot: Track submitted issues and get real-time help</em>
+</p>
+<p align="center">
+   <img src="frontend/pictures/userupload.png" alt="Report a Civic Issue" width="800" />
+   <br><em>Report a Civic Issue: Upload and categorize issues with a guided form</em>
+</p>
+
+---
+## 🌟 Features
+
+### For Citizens
+- Report issues (potholes, streetlights, sanitation, etc.) with images, location, and description
+- Upvote issues to signal urgency (grouped by location)
+- View and manage your reports
+- Real-time updates, notifications, and dark mode
+
+### For Administrators
+- Secure admin portal with login
+- Dashboard: grouped issues, unified status, upvotes, and risk classification
+- Change issue status, add notes, filter by risk and status
+- AI-powered risk analysis (Gemini API)
+- View images, user details, and GPS
+
+### Technical Highlights
+- React (Vite) frontend, Node.js/Express backend, MongoDB database
+- Multer for image uploads
+- Tailwind CSS for beautiful UI
+- Leaflet for interactive maps
+- Gemini API for risk and summary analysis
+
+---
+## ⚡ Quick Start
+
+### Prerequisites
+- Node.js v16+
+- MongoDB (local or Atlas)
+- Git
+
+### Setup
+1. Clone the repo and run `setup.bat` (Windows)
+2. Edit `backend/.env` with your MongoDB URI and Gemini API key
+3. Start backend (`start-backend.bat`), frontend (`start-frontend.bat`), and admin (`cd admin && npm run dev`)
+
+### Access
+- User frontend: http://localhost:5173
+- Admin portal: http://localhost:3001 (login: admin/admin123)
+- Backend API: http://localhost:5000
+
+---
+## 🗄️ Database Schema
+
+**Issue:**
+```js
+{
+   _id, title, description, image, location: {lat, lng}, userId, userEmail,
+   status, upvotes, priority, category, adminNotes, createdAt, updatedAt
+}
+
+---
+## 🧪 Testing & Troubleshooting
+
+### Manual Testing
+- Test backend API with curl or Postman
+- Test frontend and admin UI in browser
+
+### Key Features to Test
+- Issue submission, image upload, location
+- Grouping and unified status in admin dashboard
+- Risk classification and filtering
+- Responsive design and dark mode
+
+### Troubleshooting
+- Check MongoDB connection and credentials
+- Ensure correct ports in .env and vite.config.js
+- Image upload: check file size and uploads/ folder
+- CORS: verify URLs in .env
+
+---
+## 🔧 Configuration
+
+**Backend .env:**
+```
+MONGODB_URI=your_mongodb_uri
+PORT=5000
+GEMINI_API_KEY=your_gemini_api_key
+FRONTEND_URL=http://localhost:5173
+ADMIN_URL=http://localhost:3001
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+JWT_SECRET=your-secret-key
+MAX_FILE_SIZE=5242880
+```
+
+---
+## 🤝 Contributing
+
+1. Fork and branch
+2. Commit and push changes
+3. Open a pull request
+
+---
+## 📄 License & Credits
+
+This project is part of a hackathon submission for urban infrastructure management.
+
+**Acknowledgments:**
+- MongoDB, React, Express.js, Leaflet, Tailwind CSS
+
+---
+
+**Happy coding! 🎉**
 
 
 # 🚀 UrbanFix - Smart Urban Issue Reporting & Management
