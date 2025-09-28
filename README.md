@@ -64,14 +64,15 @@
 - Leaflet for interactive maps
 - Gemini API for risk and summary analysis
 
----
+<p align="center">
+   <img src="frontend/pictures/admindashboard.png" alt="Admin Dashboard" width="800" />
+   <br><em><b>Admin Dashboard:</b> Community Dashboard with grouped issues, risk levels, and stats</em>
+</p>
 
-
-## 🧑‍💻 Skills & Tech Stack
-
-- **Full-Stack Web Development:** React (Vite), Node.js/Express, MongoDB, Tailwind CSS, Firebase
-- **AI & Machine Learning:** Google Gemini API integration for risk analysis, real-time recommendations
-- **DevOps & Project Management:** Modular codebase, setup scripts, environment management
+<p align="center">
+   <img src="frontend/pictures/adminlogin.png" alt="Admin Login" width="500" />
+   <br><em><b>Admin Login:</b> Secure authentication for administrators</em>
+</p>
 - **UI/UX:** Professional, accessible design, dark/light mode, mobile responsiveness, interactive dashboards
 - **Security:** JWT authentication, secure admin portal, real-time monitoring
 
@@ -84,50 +85,29 @@ UrbanFix/
 ├── frontend/    # React user app
 ├── admin/       # React admin portal
 ├── backend/     # Node.js/Express API
-├── uploads/     # Uploaded images
-├── setup.bat    # Setup script
-├── start-backend.bat
-├── start-frontend.bat
-└── README.md
-```
 
----
+<p align="center">
+   <img src="frontend/pictures/userreports.png" alt="User Reports" width="800" />
+   <br><em><b>My Reports & Chatbot:</b> Track your submitted issues and get real-time help from the Civic Assistant chatbot.</em>
+</p>
 
+<p align="center">
+   <img src="frontend/pictures/userupload.png" alt="Report a Civic Issue" width="800" />
+   <br><em><b>Report a Civic Issue:</b> Upload and categorize issues (infrastructure, sanitation, traffic, etc.) with a guided, user-friendly form.</em>
+</p>
 ## ⚡ Quick Start
 
 ### Prerequisites
 - Node.js v16+
-- MongoDB (local or Atlas)
-- Git
-
-### Setup
 1. Clone the repo and run `setup.bat` (Windows)
 2. Edit `backend/.env` with your MongoDB URI and Gemini API key
-3. Start backend (`start-backend.bat`), frontend (`start-frontend.bat`), and admin (`cd admin && npm run dev`)
-
-### Access
-- User frontend: http://localhost:5173
-- Admin portal: http://localhost:3001 (login: admin/admin123)
 - Backend API: http://localhost:5000
 
----
-
-## 🖥️ Admin Portal
-
-The admin portal provides:
-- Secure login
 - Dashboard with grouped issues, unified status, upvotes, and risk level
-- Issue management: change status, view details, filter by risk/status
 - AI-powered risk classification (Gemini API)
 
 ---
-
-## 📡 API Endpoints
-
-**Issues:**
-- `GET /api/issues` - Get all issues (grouped)
 - `GET /api/issues/user/:userId` - Get user's issues
-- `POST /api/issues` - Create new issue
 - `PUT /api/issues/:id/upvote` - Toggle upvote
 - `DELETE /api/issues/:id` - Delete issue
 
